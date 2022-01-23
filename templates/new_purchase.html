@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5 w-50">
+    <h1 class="m-5 text-center">{{ name }}</h1>
+
+    <form action="{{ url_for('purchases') }}" method="POST" class="column axios-post" id="purchase">
+      <div class="mb-3 row">
+        <label for="date" class="col-2 col-form-label">Date</label>
+        <div class="col-10">
+          <input type="date" name="date" id="date" class="form-control" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="price" class="col-2 col-form-label">Price</label>
+        <div class="col-10">
+          <input type="number" step="0.1" name="price" id="price"
+            class="form-control" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="quantity" class="col-2 col-form-label">Quantity</label>
+        <div class="col-10">
+          <input type="number" step="0.1" name="quantity" id="quantity"
+            class="form-control" required>
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="providers" class="col-2 col-form-label">Provider</label>
+        <div class="col-10">
+          <select name="id_provider" id="providers" class="form-select" required>
+            <option value="" disabled selected>Select Provider</option>
+            {% for name, id in providers %}
+              <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="collectors" class="col-2 col-form-label">Collector</label>
+        <div class="col-10">
+          <select name="id_collector" id="collectors" class="form-select" required>
+            <option value="" disabled selected>Select Collector</option>
+            {% for name, id in collectors %}
+              <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100" id="purchase-submit">Submit</button>
+    </form>
+</div>
+{% endblock %}
