@@ -1,33 +1,52 @@
 const form = document.querySelector('.axios-post');
-// const date = form.elements.date;
-// const price = form.elements.price;
-// const quantity = form.elements.quantity;
-// const provider = form.elements.providers;
-// const collector = form.elements.collectors;
-// const url = form.action;
-// const submit = document.querySelector('#purchase-submit');
+
+function params() {
+  const data = {};
+
+  for (let element of form.elements) {
+    const nodeName = element.nodeName.toLowerCase();
+    if (nodeName === 'input' || nodeName === 'select') {
+      data[element.name] = element.value;
+    }
+  }
+  return data;
+}
+
+function reset_default() {
+  const data = {};
+
+  for (let element of form.elements) {
+    const nodeName = element.nodeName.toLowerCase();
+
+    if (nodeName === 'input') {
+      element.value = '';
+    }
+
+    if (nodeName === 'select') {
+      for (let option of element.options) {
+        if (option.defaultSelected) {
+          option.selected = true;
+          break;
+        }
+      }
+    }
+  }
+  return data;
+}
 
 if (form) {
+  const url = form.action;
 
- console.dir(form);
-  // form.addEventListener('submit', function (event) {
-  //   event.preventDefault();
-  //   const data = {
-  //     date: date.value,
-  //     price: price.value,
-  //     quantity: quantity.value,
-  //     id_provider: provider.value,
-  //     id_collector: collector.value,
-  //   };
-
-  //   axios.post(url, data)
-  //     .then(function (response) {
-  //       console.log(response);
-  //     })
-  //     .catch(function (err) {
-  //       console.log(err);
-  //     });
-  // });
-} else {
-  console.log('Not form present')
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    axios
+      .post(url, params())
+      .then(function (response) {
+        reset_default();
+        console.log(response);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  });
 }
