@@ -65,12 +65,16 @@ def providers():
 @app.route('/api/purchases', methods=['GET', 'POST'])
 def purchases():
     if request.method == 'POST':
-        query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
         form = request.get_json()
+
+        # New Purchase
         args = {'qty': float(form['quantity']), 'id': form['id_collector']}
         new(get_db(), 'purchases', **form)
+
+        # Update collectors
+        query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
         save_execute(get_db(), query, args)
-        print(form)
+        
     data = get_all(get_db(), 'purchases', **request.args)
     return to_json(data)
 
