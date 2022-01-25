@@ -71,10 +71,10 @@ def purchases():
         args = {'qty': float(form['quantity']), 'id': form['id_collector']}
         new(get_db(), 'purchases', **form)
 
-        # Update collectors
+        # # Update collectors
         query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
         save_execute(get_db(), query, args)
-        
+
     data = get_all(get_db(), 'purchases', **request.args)
     return to_json(data)
 

@@ -36,7 +36,7 @@ def save_execute(conn, query, args={}, changes=True):
         cur.execute(query, args)
         conn.commit()
     except Exception as e:
-        print(e)
+        print(f'Error! {e}')
     if not changes:
         return cur
     return cur.rowcount
@@ -76,25 +76,18 @@ def make_seq(iter, sep=','):
 
 def make_params(conn, table, **params):
     rows = conn.execute(f'PRAGMA table_info({table})')
-    fields = []
-    field_values = []
-    keys = {'permited': [], 'primary': []}
-
+    args = []
     for row in rows:
-        keys['primary' if row[-1] else 'permited'].append(tuple(row)[1])
-        fields.append(str(tuple(row)[1]))
-        field_values.append(f':{tuple(row)[1]}')
-    args = {keys['primary'][0]: id_gen(conn, table)}
-
-    args.update({key: params.get(key, 0) for key in keys['permited']})
-    return make_seq(fields), make_seq(field_values), args
-
+        if row[-1]:
+            args.append(id_gen(conn, table))
+        else:
+            args.append(params.get(row[1], 0 if row[2] in ('REAL', 'INTEGER') else None))
+    return tuple(args)
 
 def new(conn, table, **params):
-    fields, field_values, args = make_params(conn, table, **params)
-    query = f'INSERT INTO {table} ({fields}) VALUES({field_values});'
-
-    return save_execute(conn, query, args)
+    args = make_params(conn, table, **params)
+    query = f'INSERT INTO {table} VALUES{args};'
+    return save_execute(conn, query)
 
 
 if __name__ == '__main__':
