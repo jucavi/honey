@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, g, render_template
+from flask import Flask, url_for, request, g, render_template, Response
 import sqlite3
 from helpers import *
 import os
@@ -46,26 +46,29 @@ def api_home():
 @app.route('/api/collectors', methods=['GET', 'POST'])
 def collectors():
     if request.method == 'POST':
-        form = request.get_json()
+        form = request.get_json() or request.form
         new(get_db(), 'collectors', **form)
+        return {'success': True}
+
     data = get_all(get_db(), 'collectors', **request.args)
-    return to_json(data)
+    return Response(to_json(data), content_type='application/json')
 
 
 @app.route('/api/providers', methods=['GET', 'POST'])
 def providers():
     if request.method == 'POST':
-        form = request.get_json()
+        form = request.get_json() or request.form
         new(get_db(), 'providers', **form)
+        return {'success': True}
 
     data = get_all(get_db(), 'providers', **request.args)
-    return to_json(data)
+    return Response(to_json(data), content_type='application/json')
 
 
 @app.route('/api/purchases', methods=['GET', 'POST'])
 def purchases():
     if request.method == 'POST':
-        form = request.get_json()
+        form = request.get_json() or request.form
 
         # New Purchase
         args = {'qty': float(form['quantity']), 'id': form['id_collector']}
@@ -74,9 +77,10 @@ def purchases():
         # # Update collectors
         query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
         save_execute(get_db(), query, args)
+        return {'success': True}
 
     data = get_all(get_db(), 'purchases', **request.args)
-    return to_json(data)
+    return Response(to_json(data), content_type='application/json')
 
 
 @app.route('/collectors/new')
@@ -99,5 +103,13 @@ def new_purchase():
     return render_template('new_purchase.html', name=name, providers=providers, collectors=collectors)
 
 
+@app.route('/api/<table>/<Id>')
+def get(table, Id):
+    query = f'SELECT * FROM {table} WHERE id={Id!r}'
+    print(query)
+    data = save_execute(get_db(), query, changes=False)
+    return Response(to_json(data), content_type='application/json')
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=3000)

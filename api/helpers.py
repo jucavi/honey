@@ -1,7 +1,9 @@
+import json
+
 def to_json(items, one=False):
     if one:
-        return dict(items)
-    return {'data': [dict(item) for item in items]}
+        return json.dumps(dict(items), sort_keys=False, indent=4)
+    return json.dumps({'data': [dict(item) for item in items]}, sort_keys=False, indent=4)
 
 
 def get_all(conn, table, **params):
