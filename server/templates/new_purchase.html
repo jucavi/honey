@@ -2,9 +2,9 @@
 
 {% block body %}
 <div class="container mt-5 w-50">
-    <h1 class="m-5 text-center">{{ name }}</h1>
+    <h1 class="m-5 text-center">New {{ name[:-1]|capitalize }}</h1>
 
-    <form action="{{ url_for('home', table='purchases') }}" method="POST" class="column axios-post border border-info border-3 rounded-3 p-5" id="purchase">
+    <form action="{{ url_for('home', table=name) }}" method="POST" class="column p-5">
       <div class="mb-3 row">
         <label for="date" class="col-2 col-form-label">Date</label>
         <div class="col-10">
@@ -31,7 +31,7 @@
         <div class="col-10">
           <select name="id_provider" id="providers" class="form-select" required>
             <option value="" disabled selected>Select Provider</option>
-            {% for name, id in providers %}
+            {% for name, id in providers|sort %}
               <option value="{{ id }}">{{ name }}</option>
             {% endfor %}
           </select>
@@ -43,13 +43,18 @@
         <div class="col-10">
           <select name="id_collector" id="collectors" class="form-select" required>
             <option value="" disabled selected>Select Collector</option>
-            {% for name, id in collectors %}
+            {% for name, id in collectors|sort %}
               <option value="{{ id }}">{{ name }}</option>
             {% endfor %}
           </select>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary w-100" id="purchase-submit">Submit</button>
+      <div class="d-flex justify-content-center mt-5">
+        <button type="submit" class="btn btn-outline custom-btn-border"
+          id="purchase-submit">
+          <spam class="mx-5">Submit</spam>
+        </button>
+      </div>
     </form>
 </div>
 {% endblock %}

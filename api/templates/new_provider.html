@@ -2,9 +2,9 @@
 
 {% block body %}
 <div class="container mt-5 w-50">
-  <h1 class="m-5 text-center">{{ name }}</h1>
+  <h1 class="m-5 text-center">{{ name[:-1]|capitalize }}</h1>
 
-  <form action="{{ url_for('providers') }}" method="POST" class="column axios-post border border-info border-3 rounded-3 p-5"
+  <form action="{{ url_for('tables', table=name) }}" method="POST" class="column axios-post border border-info border-3 rounded-3 p-5"
     id="provider">
     <div class="mb-3 row">
       <label for="name" class="col-2 col-form-label">Name</label>

@@ -13,7 +13,7 @@ def get_all(conn, table, **params):
         order = 'ASC'
 
     query = f'SELECT * FROM {table} ORDER BY {sort} {order};'
-    cur = save_execute(conn, query, changes=False)
+    cur = save_execute(conn, query, cursor=True)
     return cur.fetchall()
 
 
@@ -32,16 +32,17 @@ def get_by(conn, table, field, value, fields=('*',)):
     return cur.fetchone()
 
 
-def save_execute(conn, query, args={}, changes=True):
+def save_execute(conn, query, args={}, cursor=False):
     cur = conn.cursor()
     try:
         cur.execute(query, args)
         conn.commit()
     except Exception as e:
         print(f'Error! {e}')
-    if not changes:
-        return cur
-    return cur.rowcount
+    else:
+        if cursor:
+            return cur
+        return cur.rowcount
 
 
 def delete_by_id(conn, table, Id):

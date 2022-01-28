@@ -1,0 +1,52 @@
+body {
+    background-color: #457b9d;
+}
+
+h1 {
+    color: #1d3557;
+    font-weight: 400;
+    font-size: 3.5em;
+}
+
+label {
+    font-weight: 300;
+    color: #1d3557;
+}
+
+form {
+    border: #a8dadc .1em solid;
+    border-radius: 2em;
+}
+
+/* form button {
+    background-color: #1d3557 !important;
+    color: #f1faee !important;
+} */
+
+.custom-btn-border {
+    border: #a8dadc .1em solid;
+    border-radius: 2em;
+    font-weight: 400;
+    transition: all 0.4s ease-in-out 0.1s;
+}
+
+.custom-btn-border:hover {
+    font-weight: 400;
+    color: #a8dadc !important;
+    border: #1d3557 .12em solid;
+}
+
+
+a {
+    text-decoration: none !important;
+    color: #1d3557;
+}
+
+
+a:hover {
+    color: #a8dadc !important;
+}
+
+table {
+    border-color: #a8dadc !important;
+}
