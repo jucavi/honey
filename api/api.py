@@ -57,7 +57,7 @@ def new_table(table):
     return render_template(f'new_{table[:-1]}.html', **context)
 
 
-@app.route('/api/<table>/<Id>' methods=['GET', 'PUT', 'DELETE'])
+@app.route('/api/<table>/<Id>', methods=['GET', 'PUT', 'DELETE'])
 def get(table, Id):
     if request.method == 'PUT':
         form = request.get_json() or request.form

@@ -67,7 +67,7 @@ def new(table):
 
     return render_template(f'new_{table[:-1]}.html', **context)
 
-@app.route('/card/<table>/<Id>' methods=['GET', 'PUT'])
+@app.route('/card/<table>/<Id>', methods=['GET', 'PUT'])
 def card(table, Id):
     if requests.method == 'PUT':
         success = requests.put(f'{uri}{table}/{Id}', data=request.form).json().get('success')
