@@ -29,7 +29,7 @@ def data_for_select(table):
     return map(lambda row: (row['name'], row['id']), rows)
 
 
-@app.route('/api/<table>', methods=['GET', 'POST'])
+@app.route('/api/<table>', methods=['GET', 'POST', 'PUT'])
 def tables(table):
     if request.method == 'POST':
         form = request.get_json() or request.form
@@ -57,8 +57,14 @@ def new_table(table):
     return render_template(f'new_{table[:-1]}.html', **context)
 
 
-@app.route('/api/<table>/<Id>')
+@app.route('/api/<table>/<Id>' methods=['GET', 'PUT', 'DELETE'])
 def get(table, Id):
+    if request.method == 'PUT':
+        form = request.get_json() or request.form
+        changes = update_by_id(get_db(), table, Id, **form)
+
+        return {'success': changes > 1}
+
     query = f'SELECT * FROM {table} WHERE id={Id!r}'
     data = save_execute(get_db(), query, cursor=True)
     return Response(to_json(data), content_type='application/json')

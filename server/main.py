@@ -29,7 +29,8 @@ def create_context(res, table):
                     'id_') else row[key]
                 for key in raw_fields
             ],
-            f'{uri}{table}/{row["id"]}'
+            # f'{uri}{table}/{row["id"]}'
+            row['id']
         ]
         for row in res
     ]
@@ -66,9 +67,27 @@ def new(table):
 
     return render_template(f'new_{table[:-1]}.html', **context)
 
-@app.route('/card/<table>/<Id>')
+@app.route('/card/<table>/<Id>' methods=['GET', 'PUT'])
 def card(table, Id):
-    pass
+    if requests.method == 'PUT':
+        success = requests.put(f'{uri}{table}/{Id}', data=request.form).json().get('success')
+
+    if table == 'providers':
+        img_uri = 'img/revolt-QJfew6cDpR4-unsplash.jpg'
+    elif table == 'collectors':
+        img_uri = 'img/christina-branco-G_xYDS6UuXo-unsplash.jpg'
+    else:
+        img_uri = 'img/duncan-meyer-Xc6boi5lsfI-unsplash.jpg',
+
+    res = requests.get(f'{uri}{table}/{Id}').json()['data']
+    if res:
+        context = create_context(res, table)
+        rows, Id = context['rows'][0]
+        fields_rows = zip(context['fields'],rows)
+    else:
+        flash('No data Found!')
+    return render_template('card.html', img_uri=img_uri, table=context['table'], fields_rows=fields_rows)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

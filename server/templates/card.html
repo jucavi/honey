@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h1 class="text-center">{{ table[:-1]|capitalize }}</h1>
+{% endblock %}
+
+
+{% block body %}
+<div class="container d-flex justify-content-center mt-4">
+  <div class="card">
+    <img src="{{ url_for('static', filename=img_uri) }}"
+    class="card-img-top" alt="provider-img">
+    <div class="card-body bg-color-light">
+      <div class="card-text container">
+        {% for field, value in fields_rows %}
+          <div class="row">
+            <div class="col"><strong>{{ field|capitalize }}</strong>:</div>
+            <div class="col"><span>{{ value }}</span></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container d-flex justify-content-around my-2">
+  <div class="d-flex justify-content-start my-3">
+    <a class="btn btn-outline custom-btn-border" href=""
+      role="button">Update</a>
+  </div>
+  <div class="d-flex justify-content-start my-3">
+    <a class="btn btn-outline custom-btn-border" href=""
+      role="button">Delete</a>
+  </div>
+</div>
+{% endblock %}

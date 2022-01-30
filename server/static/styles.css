@@ -50,3 +50,15 @@ a:hover {
 table {
     border-color: #a8dadc !important;
 }
+
+.card {
+    width: 70%;
+}
+
+li {
+    list-style: none;
+}
+
+.bg-color-light {
+    background-color: #a8dadc !important;
+}

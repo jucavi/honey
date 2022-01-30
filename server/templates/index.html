@@ -21,11 +21,11 @@
       </tr>
     </thead>
     <tbody>
-      {% for row, uri in rows|sort %}
+      {% for row, id in rows|sort %}
         <tr>
             <th scope="row">{{ loop.index }}</th>
             {% for item in row %}
-              <td><a href="{{ uri }}">{{ item }}</a></td>
+              <td><a href="{{ url_for('card', table=table, Id=id) }}">{{ item }}</a></td>
             {% endfor %}
         </tr>
       {% endfor %}
