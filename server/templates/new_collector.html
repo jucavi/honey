@@ -4,7 +4,9 @@
   <div class="container mt-5 w-50">
     <h1 class="m-5 text-center">New {{ table[:-1]|capitalize }}</h1>
 
-    <form action="{{ url_for('home', table=table) }}" method="POST" class="column p-5">
+    <form action="{{ url_for('home', table=table) if not obj else url_for('card', table=table, Id=obj.id)}}"
+          method="POST"
+          class="column p-5">
       <div class="mb-3 row">
         <label for="name" class="col-2 col-form-label">Name</label>
         <div class="col-10">

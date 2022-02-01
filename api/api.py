@@ -31,18 +31,16 @@ def data_for_select(table):
     return map(lambda row: (row['name'], row['id']), rows)
 
 
-@app.route('/api/<table>', methods=['GET', 'POST', 'PUT'])
+@app.route('/api/<table>', methods=['GET', 'POST'])
 def tables(table):
     if request.method == 'POST':
         form = request.get_json() or request.form
         changes = new(get_db(), table, **form)
-        print(changes)
 
         if table == 'purchases':
             args = {'qty': float(form['quantity']), 'id': form['id_collector']}
             query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
             changes += save_execute(get_db(), query, args)
-            # print(changes)
 
         return {'success': changes > 0}
 
@@ -50,18 +48,18 @@ def tables(table):
     return Response(to_json(data), content_type='application/json')
 
 
-@app.route('/api/<table>/new')
-def new_table(table):
-    context = {'name': table}
-    if table == 'purchases':
-        providers = data_for_select('providers')
-        collectors = data_for_select('collectors')
-        context.update({'providers': providers, 'collectors': collectors})
+# @app.route('/api/<table>/new')
+# def new_table(table):
+#     context = {'name': table}
+#     if table == 'purchases':
+#         providers = data_for_select('providers')
+#         collectors = data_for_select('collectors')
+#         context.update({'providers': providers, 'collectors': collectors})
 
-    return render_template(f'new_{table[:-1]}.html', **context)
+#     return render_template(f'new_{table[:-1]}.html', **context)
 
 
-@app.route('/api/<table>/<Id>', methods=['GET', 'UPDATE', 'DELETE'])
+@app.route('/api/<table>/<Id>', methods=['GET', 'PUT', 'DELETE'])
 def get(table, Id):
     changes = 0
     if request.method == 'PUT':

@@ -78,7 +78,7 @@ def new(table):
 
 
 
-@app.route('/<table>/<Id>')
+@app.route('/<table>/<Id>', methods=['GET', 'POST'])
 def card(table, Id):
     obj = get_by_id(table, Id)
     verb = request.args
@@ -88,13 +88,19 @@ def card(table, Id):
         'purchases': 'img/duncan-meyer-Xc6boi5lsfI-unsplash.jpg'
     }
 
-    if obj:
-        context = create_context((obj, ))
-        rows, _ = context['rows'][0]
-        fields_rows = zip(context['fields'], rows)
-    else:
+    if not obj:
         flash('no data Found!')
         return redirect(url_for('home', table=table))
+
+    if request.method == 'POST':
+        print('in card update')
+        print(request.args)
+        success = requests.put(f'{uri}{table}/{Id}', data=request.form).json().get('success')
+        obj = get_by_id(table, Id)
+        if success:
+            flash('successfully updated!')
+        else:
+            flash('upps!')
 
     if verb.get('delete'):
         success = requests.delete(f'{uri}{table}/{Id}').json().get('success')
@@ -106,6 +112,10 @@ def card(table, Id):
 
     if verb.get('update'):
         return redirect(url_for('new', table=table, Id=Id))
+
+    context = create_context((obj, ))
+    rows, _ = context['rows'][0]
+    fields_rows = zip(context['fields'], rows)
 
     return render_template('card.html', img_uri=img_uris.get(table), table=table, fields_rows=fields_rows, Id=Id)
 
