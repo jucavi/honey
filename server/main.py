@@ -74,7 +74,8 @@ def new(table):
             'collectors':data_for_select('collectors')
         })
 
-    return render_template(f'new_{table[:-1]}.html', **context, obj=obj)
+    # return render_template(f'new_{table[:-1]}.html', **context, obj=obj)
+    return render_template(f'new.html', **context, obj=obj)
 
 
 

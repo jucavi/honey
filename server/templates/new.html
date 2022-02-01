@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container mt-5 w-50">
+  <h1 class="m-5 text-center">New {{ table[:-1]|capitalize }}</h1>
+
+  <form
+    action="{{ url_for('home', table=table) if not obj else url_for('card', table=table, Id=obj.id)}}"
+    method="POST" class="column p-5">
+    {% if table == 'purchases' %}
+      <div class="mb-3 row">
+        <label for="date" class="col-2 col-form-label">Date</label>
+        <div class="col-10">
+          <input type="date" name="date" id="date" class="form-control" value="{{ obj.get('date', '') }}" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="price" class="col-2 col-form-label">Price</label>
+        <div class="col-10">
+          <input type="number" step="0.1" name="price" id="price"
+            class="form-control" value="{{ obj.get('price', '') }}" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="quantity" class="col-2 col-form-label">Quantity</label>
+        <div class="col-10">
+          <input type="number" step="0.1" name="quantity" id="quantity"
+            class="form-control" value="{{ obj.get('quantity', '') }}" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="providers" class="col-2 col-form-label">Provider</label>
+        <div class="col-10">
+          <select name="id_provider" id="providers" class="form-select" required>
+            <option value="" disabled selected>Select Provider</option>
+            {% for name, id in providers|sort %}
+              {% if obj %}
+                <option value="{{ id }}" {{ 'selected' if obj.id_provider == id else '' }} disabled>{{ name }}</option>
+                <input type="hidden" name="id_provider" value="{{ obj.id_provider }}" />
+              {% else %}
+                <option value="{{ id }}">{{ name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="collectors" class="col-2 col-form-label">Collector</label>
+        <div class="col-10">
+          <select name="id_collector" id="collectors" class="form-select" value="{{ obj.get('name', '') }}" required>
+            <option value="" disabled selected>Select Collector</option>
+            {% for name, id in collectors|sort %}
+              {% if obj %}
+                <option value="{{ id }}" {{ 'selected' if obj.id_collector == id else '' }} disabled>{{ name }}</option>
+                <input type="hidden" name="id_collector" value="{{ obj.id_collector }}" />
+              {% else %}
+                <option value="{{ id }}">{{ name }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    {% else %}
+      <div class="mb-3 row">
+        <label for="name" class="col-2 col-form-label">Name</label>
+        <div class="col-10">
+          <input type="text" name="name" id="name" class="form-control"
+            value="{{ obj.get('name', '') }}" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="email" class="col-2 col-form-label">Email</label>
+        <div class="col-10">
+          <input type="email" name="email" id="email" class="form-control"
+            value="{{ obj.get('email', '')}}" required>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-center mt-5">
+      <button type="submit" class="btn btn-outline custom-btn-border"
+        id="purchase-submit">
+        <spam class="mx-5">Submit</spam>
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

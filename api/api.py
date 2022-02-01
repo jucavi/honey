@@ -48,23 +48,23 @@ def tables(table):
     return Response(to_json(data), content_type='application/json')
 
 
-# @app.route('/api/<table>/new')
-# def new_table(table):
-#     context = {'name': table}
-#     if table == 'purchases':
-#         providers = data_for_select('providers')
-#         collectors = data_for_select('collectors')
-#         context.update({'providers': providers, 'collectors': collectors})
-
-#     return render_template(f'new_{table[:-1]}.html', **context)
-
-
 @app.route('/api/<table>/<Id>', methods=['GET', 'PUT', 'DELETE'])
 def get(table, Id):
     changes = 0
     if request.method == 'PUT':
         form = request.get_json() or request.form
-        changes = update_by_id(get_db(), table, Id, **form)
+        print('------>', form.get('id_collector'))
+        # changes = update_by_id(get_db(), table, Id, **form)
+        if table == 'purchases':
+            qty = save_execute(
+                get_db(),
+                'SELECT (quantity) FROM collectors WHERE id=:id', {'id': form.get('id_collector')},
+                cursor=True
+            ).fetchone()
+            print(qty)
+            # args = {'qty': float(form['quantity']), 'id': form['id_collector']}
+            # query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
+            # changes += save_execute(get_db(), query, args)
         return {'success': changes > 0}
 
     if request.method == 'DELETE':
