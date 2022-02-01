@@ -8,15 +8,22 @@ uri = f'http://localhost:3000/api/'
 def insert_name(foreign_name, foreign_id):
     _, table = foreign_name.split('_')
     res = requests.get(f'{uri}{table}s/{foreign_id}').json()
-    print(res)
-    return res['data'][0].get('name')
+    if res['data']:
+        return res['data'][0].get('name')
+    else:
+        return 'Unknown'
+
+
+def get_by_id(table, Id):
+    res = requests.get(f'{uri}{table}/{Id}').json()['data']
+    return res[0] if res else None
 
 
 def data_for_select(table):
     rows = requests.get(f'{uri}{table}').json()['data']
     return map(lambda row: (row['name'], row['id']), rows)
 
-def create_context(res, table):
+def create_context(res):
     raw_fields = [key for key in res[0].keys() if key != 'id']
     fields = [
         key.split('_')[1] if key.startswith('id_') else key
@@ -29,48 +36,65 @@ def create_context(res, table):
                     'id_') else row[key]
                 for key in raw_fields
             ],
-            # f'{uri}{table}/{row["id"]}'
             row['id']
         ]
         for row in res
     ]
-    return {'fields': fields, 'rows': rows, 'table': table}
+    return {'fields': fields, 'rows': rows}
 
 
 @app.route('/<table>', methods=['GET', 'POST'])
 def home(table):
-    context = {}
+    context = {'table': table}
     if request.method == 'POST':
         success = requests.post(f'{uri}{table}', data=request.form).json().get('success')
         if success:
             flash('succesfully created!')
             return redirect(url_for('home', table=table))
         else:
-            flash('Something went wrong!')
-            return redirect(url_for(f'new_{table[:-1]}'))
+            flash('something went wrong!')
+            return redirect(url_for('new', table=table))
 
     res = requests.get(f'{uri}{table}').json()['data']
     if res:
-        context = create_context(res, table)
+        context.update(create_context(res))
 
     return render_template('index.html', **context)
 
 
-@app.route('/<table>/new')
+@app.route('/<table>/new', methods=['GET', 'POST'])
 def new(table):
-    context = {'name': table}
+    context = {'table': table}
     if table == 'purchases':
         context.update({
             'providers':data_for_select('providers'),
             'collectors':data_for_select('collectors')
-            })
+        })
 
-    return render_template(f'new_{table[:-1]}.html', **context)
+    return render_template(f'new_{table[:-1]}.html', **context, obj={})
 
-@app.route('/card/<table>/<Id>', methods=['GET', 'PUT'])
+
+
+@app.route('/<table>/<Id>')
 def card(table, Id):
-    if requests.method == 'PUT':
-        success = requests.put(f'{uri}{table}/{Id}', data=request.form).json().get('success')
+    obj = get_by_id(table, Id)
+    verb = request.args
+
+    if verb.get('delete'):
+        success = requests.delete(f'{uri}{table}/{Id}').json().get('success')
+        if success:
+            flash('successfully deleted!')
+        else:
+            flash('upps!')
+        return redirect(url_for('home', table=table))
+
+    if obj:
+        context = create_context((obj, ))
+        rows, Id = context['rows'][0]
+        fields_rows = zip(context['fields'], rows)
+    else:
+        flash('no data Found!')
+        return redirect(url_for('home', table=table))
 
     if table == 'providers':
         img_uri = 'img/revolt-QJfew6cDpR4-unsplash.jpg'
@@ -79,14 +103,30 @@ def card(table, Id):
     else:
         img_uri = 'img/duncan-meyer-Xc6boi5lsfI-unsplash.jpg',
 
-    res = requests.get(f'{uri}{table}/{Id}').json()['data']
-    if res:
-        context = create_context(res, table)
-        rows, Id = context['rows'][0]
-        fields_rows = zip(context['fields'],rows)
-    else:
-        flash('No data Found!')
-    return render_template('card.html', img_uri=img_uri, table=context['table'], fields_rows=fields_rows)
+    return render_template('card.html', img_uri=img_uri, table=table, fields_rows=fields_rows, Id=Id)
+
+# @app.route('/<table>/<Id>/update', methods=['GET', 'PUT'])
+# def update(table, Id):
+#     obj = get_by_id(table, Id)
+#     if request.method == 'PUT':
+#         success = requests.put(f'{uri}{table}/{Id}', data=request.form).json().get('success')
+#         if success:
+#             flash('Successfully created')
+#             return redirect('index', table=table)
+#         flash('Ups')
+#         return 'Watt!!!'
+
+#     return render_template(f'update_{table[:-1]}.html', table=table, obj=obj)
+
+
+# @app.route('/<table>/<Id>/delete', methods=['GET', 'DELETE'])
+# def delete(table, Id):
+#     success = requests.delete(f'{uri}{table}/{Id}').json().get('success')
+#     if success:
+#         flash('Successfully deleted!')
+#     else:
+#         flash('Upps!')
+#     return redirect(url_for('home', table=table))
 
 
 if __name__ == '__main__':

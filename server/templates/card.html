@@ -22,14 +22,14 @@
     </div>
   </div>
 </div>
-<div class="container d-flex justify-content-around my-2">
-  <div class="d-flex justify-content-start my-3">
-    <a class="btn btn-outline custom-btn-border" href=""
+<div class="container d-flex justify-content-center my-2">
+  <div class="d-flex justify-content-start my-3 me-2">
+    <a class="btn btn-outline custom-btn-border" href="http://localhost:5000/{{ table }}/{{ Id }}?update=True"
       role="button">Update</a>
   </div>
-  <div class="d-flex justify-content-start my-3">
-    <a class="btn btn-outline custom-btn-border" href=""
-      role="button">Delete</a>
+  <div class="d-flex justify-content-start my-3 ms-2">
+    <a class="btn btn-outline custom-btn-border" href="http://localhost:5000/{{ table }}/{{ Id }}?delete=True" role="button">Delete</a>
+    <!-- <a class="btn btn-outline custom-btn-border" href="{# url_for('delete', table=table, Id=Id) #}" role="button">Delete</a> -->
   </div>
 </div>
 {% endblock %}

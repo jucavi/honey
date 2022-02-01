@@ -1,3 +1,5 @@
+from ast import Delete
+from ssl import CHANNEL_BINDING_TYPES
 from flask import Flask, url_for, request, g, render_template, Response
 import sqlite3
 from helpers import *
@@ -34,13 +36,15 @@ def tables(table):
     if request.method == 'POST':
         form = request.get_json() or request.form
         changes = new(get_db(), table, **form)
+        print(changes)
 
         if table == 'purchases':
             args = {'qty': float(form['quantity']), 'id': form['id_collector']}
             query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
             changes += save_execute(get_db(), query, args)
+            print(changes)
 
-        return {'success': changes > 1}
+        return {'success': changes > 0}
 
     data = get_all(get_db(), table, **request.args)
     return Response(to_json(data), content_type='application/json')
@@ -57,13 +61,22 @@ def new_table(table):
     return render_template(f'new_{table[:-1]}.html', **context)
 
 
-@app.route('/api/<table>/<Id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/api/<table>/<Id>', methods=['GET', 'UPDATE', 'DELETE'])
 def get(table, Id):
     if request.method == 'PUT':
         form = request.get_json() or request.form
         changes = update_by_id(get_db(), table, Id, **form)
+        if changes:
+            return {'success': True}
+        return {'success': False}
 
-        return {'success': changes > 1}
+    if request.method == 'DELETE':
+        changes = None
+        if table != 'purchases':
+            changes = delete_by_id(get_db(), table, Id)
+        if changes:
+            return {'success': True}
+        return {'success': False}
 
     query = f'SELECT * FROM {table} WHERE id={Id!r}'
     data = save_execute(get_db(), query, cursor=True)
