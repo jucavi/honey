@@ -42,7 +42,7 @@ def tables(table):
             args = {'qty': float(form['quantity']), 'id': form['id_collector']}
             query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
             changes += save_execute(get_db(), query, args)
-            print(changes)
+            # print(changes)
 
         return {'success': changes > 0}
 
@@ -63,20 +63,17 @@ def new_table(table):
 
 @app.route('/api/<table>/<Id>', methods=['GET', 'UPDATE', 'DELETE'])
 def get(table, Id):
+    changes = 0
     if request.method == 'PUT':
         form = request.get_json() or request.form
         changes = update_by_id(get_db(), table, Id, **form)
-        if changes:
-            return {'success': True}
-        return {'success': False}
+        return {'success': changes > 0}
 
     if request.method == 'DELETE':
         changes = None
         if table != 'purchases':
             changes = delete_by_id(get_db(), table, Id)
-        if changes:
-            return {'success': True}
-        return {'success': False}
+        return {'success': changes > 0}
 
     query = f'SELECT * FROM {table} WHERE id={Id!r}'
     data = save_execute(get_db(), query, cursor=True)

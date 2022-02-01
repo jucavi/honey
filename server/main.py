@@ -65,13 +65,16 @@ def home(table):
 @app.route('/<table>/new', methods=['GET', 'POST'])
 def new(table):
     context = {'table': table}
+    Id = request.args.get('Id')
+    obj = get_by_id(table, Id) or {}
+
     if table == 'purchases':
         context.update({
             'providers':data_for_select('providers'),
             'collectors':data_for_select('collectors')
         })
 
-    return render_template(f'new_{table[:-1]}.html', **context, obj={})
+    return render_template(f'new_{table[:-1]}.html', **context, obj=obj)
 
 
 
@@ -79,6 +82,19 @@ def new(table):
 def card(table, Id):
     obj = get_by_id(table, Id)
     verb = request.args
+    img_uris = {
+        'providers': 'img/revolt-QJfew6cDpR4-unsplash.jpg',
+        'collectors': 'img/christina-branco-G_xYDS6UuXo-unsplash.jpg',
+        'purchases': 'img/duncan-meyer-Xc6boi5lsfI-unsplash.jpg'
+    }
+
+    if obj:
+        context = create_context((obj, ))
+        rows, _ = context['rows'][0]
+        fields_rows = zip(context['fields'], rows)
+    else:
+        flash('no data Found!')
+        return redirect(url_for('home', table=table))
 
     if verb.get('delete'):
         success = requests.delete(f'{uri}{table}/{Id}').json().get('success')
@@ -88,22 +104,10 @@ def card(table, Id):
             flash('upps!')
         return redirect(url_for('home', table=table))
 
-    if obj:
-        context = create_context((obj, ))
-        rows, Id = context['rows'][0]
-        fields_rows = zip(context['fields'], rows)
-    else:
-        flash('no data Found!')
-        return redirect(url_for('home', table=table))
+    if verb.get('update'):
+        return redirect(url_for('new', table=table, Id=Id))
 
-    if table == 'providers':
-        img_uri = 'img/revolt-QJfew6cDpR4-unsplash.jpg'
-    elif table == 'collectors':
-        img_uri = 'img/christina-branco-G_xYDS6UuXo-unsplash.jpg'
-    else:
-        img_uri = 'img/duncan-meyer-Xc6boi5lsfI-unsplash.jpg',
-
-    return render_template('card.html', img_uri=img_uri, table=table, fields_rows=fields_rows, Id=Id)
+    return render_template('card.html', img_uri=img_uris.get(table), table=table, fields_rows=fields_rows, Id=Id)
 
 # @app.route('/<table>/<Id>/update', methods=['GET', 'PUT'])
 # def update(table, Id):
