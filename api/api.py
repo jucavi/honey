@@ -1,5 +1,6 @@
 from ast import Delete
 from ssl import CHANNEL_BINDING_TYPES
+from tokenize import cookie_re
 from flask import Flask, url_for, request, g, render_template, Response
 import sqlite3
 from helpers import *
@@ -30,47 +31,50 @@ def data_for_select(table):
     rows = get_all(get_db(), table, sort='name')
     return map(lambda row: (row['name'], row['id']), rows)
 
+def modify_collector(conn, form):
+    args = {'qty': float(form['quantity']), 'id': form['id_collector']}
+    query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
+    return save_execute(conn, query, args)
+
 
 @app.route('/api/<table>', methods=['GET', 'POST'])
 def tables(table):
+    conn = get_db()
+    changes = 0
     if request.method == 'POST':
         form = request.get_json() or request.form
-        changes = new(get_db(), table, **form)
+        changes = new(conn, table, **form)
 
         if table == 'purchases':
-            args = {'qty': float(form['quantity']), 'id': form['id_collector']}
-            query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
-            changes += save_execute(get_db(), query, args)
-
+            changes += modify_collector(conn, form)
         return {'success': changes > 0}
 
-    data = get_all(get_db(), table, **request.args)
+    data = get_all(conn, table, **request.args)
     return Response(to_json(data), content_type='application/json')
 
 
 @app.route('/api/<table>/<Id>', methods=['GET', 'PUT', 'DELETE'])
 def get(table, Id):
+    conn = get_db()
     changes = 0
     if request.method == 'PUT':
         form = request.get_json() or request.form
-        print('------>', form.get('id_collector'))
-        # changes = update_by_id(get_db(), table, Id, **form)
+
         if table == 'purchases':
-            qty = save_execute(
-                get_db(),
-                'SELECT (quantity) FROM collectors WHERE id=:id', {'id': form.get('id_collector')},
-                cursor=True
-            ).fetchone()
-            print(qty)
-            # args = {'qty': float(form['quantity']), 'id': form['id_collector']}
-            # query = f'UPDATE collectors SET quantity = quantity + :qty WHERE id=:id'
-            # changes += save_execute(get_db(), query, args)
+            start_qty = next(save_execute(conn, f'SELECT * FROM {table} WHERE id=:id', {'id': Id}, cursor=True))['quantity']
+            coll_qty = float(form['quantity']) - float(start_qty)
+            coll_form = dict(form)
+            coll_form.update({'quantity': coll_qty})
+            changes = modify_collector(conn, coll_form)
+
+        changes += update_by_id(conn, table, Id, **form)
+
         return {'success': changes > 0}
 
     if request.method == 'DELETE':
-        changes = None
+        changes = 0
         if table != 'purchases':
-            changes = delete_by_id(get_db(), table, Id)
+            changes = delete_by_id(conn, table, Id)
         return {'success': changes > 0}
 
     query = f'SELECT * FROM {table} WHERE id={Id!r}'
