@@ -5,11 +5,13 @@ from flask import Flask, url_for, request, g, render_template, Response
 import sqlite3
 from helpers import *
 import os
+from flask_cors import CORS
 
 cwd = os.path.dirname(__file__)
 DB = 'honey.db'
 DBpath = os.path.join(cwd, DB)
 app = Flask(__name__)
+CORS(app)
 
 
 def get_db():

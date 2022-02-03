@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<h1 class="text-center">{{ table[:-1]|capitalize }}</h1>
+<div class="container mt-5">
+  <h1 class="text-center pt-5">{{ table[:-1]|capitalize }}</h1>
+</div>
 {% endblock %}
 
 
 {% block body %}
-<div class="container d-flex justify-content-center mt-4">
+<div class="container d-flex justify-content-center mt-5">
   <div class="card">
     <img src="{{ url_for('static', filename=img_uri) }}"
     class="card-img-top" alt="provider-img">
@@ -14,8 +16,8 @@
       <div class="card-text container">
         {% for field, value in fields_rows %}
           <div class="row">
-            <div class="col"><strong>{{ field|capitalize }}</strong>:</div>
-            <div class="col"><span>{{ value }}</span></div>
+            <div class="col-4"><strong>{{ field|capitalize }}</strong>:</div>
+            <div class="col-8"><span>{{ value }}</span></div>
           </div>
         {% endfor %}
       </div>
@@ -29,7 +31,6 @@
   </div>
   <div class="d-flex justify-content-start my-3 ms-2">
     <a class="btn btn-outline custom-btn-border" href="http://localhost:5000/{{ table }}/{{ Id }}?delete=True" role="button">Delete</a>
-    <!-- <a class="btn btn-outline custom-btn-border" href="{# url_for('delete', table=table, Id=Id) #}" role="button">Delete</a> -->
   </div>
 </div>
 {% endblock %}
