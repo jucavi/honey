@@ -14,7 +14,9 @@ def get_all(conn, table, **params):
 
     query = f'SELECT * FROM {table} ORDER BY {sort} {order};'
     cur = save_execute(conn, query, cursor=True)
-    return cur.fetchall()
+    if cur:
+        return cur.fetchall()
+    return []
 
 
 def get_by_id(conn, table, Id, fields=('*',)):
