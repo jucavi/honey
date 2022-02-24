@@ -31,5 +31,5 @@ Basic example of relational database with sqlite3 in Flask
 
         $ python3 main.py
         
- 7. Go to [honey app](http://127.0.0.1/)
+ 7. Go to [honey app](http://127.0.0.1:5000/)
  
