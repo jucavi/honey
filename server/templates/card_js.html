@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<div class="container mt-5">
+  <h1 class="text-center pt-5"></h1>
+</div>
+{% endblock %}
+
+
+{% block body %}
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card">
+    <img src="{{url_for('static', filename='')}}" class="card-img-top"
+      alt="provider-img" id="card-img">
+    <div class="card-body bg-color-light">
+      <div class="card-text container">
+        <div class="row">
+          <div class="col-4"><strong>field</strong>:</div>
+          <div class="col-8"><span>value</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container d-flex justify-content-center my-2">
+  <div class="d-flex justify-content-start my-3 me-2">
+    <a class="btn btn-outline custom-btn-border"
+      href=""
+      role="button"
+      id="update">Update</a>
+  </div>
+  <div class="d-flex justify-content-start my-3 ms-2">
+    <a class="btn btn-outline custom-btn-border"
+      role="button"
+      id="delete">Delete</a>
+  </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{ url_for('static', filename='card.js') }}"></script>
+{% endblock %}

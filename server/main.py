@@ -69,6 +69,12 @@ def home(table):
     return render_template('index.html', **context)
 
 
+'''####################### JS ######################'''
+@app.route('/js/<table>', methods=['GET', 'POST'])
+def js_home(table):
+    return render_template('index_js.html')
+
+
 @app.route('/<table>/new', methods=['GET', 'POST'])
 def new(table):
     context = {'table': table}
@@ -82,6 +88,18 @@ def new(table):
         })
 
     return render_template(f'new.html', **context, obj=obj)
+
+
+'''####################### JS ######################'''
+@app.route('/js/<table>/new')
+def js_new(table):
+    return render_template(f'new_js.html')
+
+
+'''####################### JS ######################'''
+@app.route('/js/<table>/<Id>')
+def js_card(table, Id):
+    return render_template(f'card_js.html')
 
 
 @app.route('/<table>/<Id>', methods=['GET', 'POST'])

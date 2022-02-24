@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{%block head %}
+<div class="mt-5">
+  <h1 class="text-center pt-5"></h2>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="container text-center mt-5">
+  <div class="d-flex justify-content-start my-3">
+    <a class="btn btn-outline custom-btn-border" role="button" id="new"></a>
+  </div>
+  <table class="table table-hover" id="table-d">
+    <thead>
+      <tr id="table-d-head">
+      </tr>
+    </thead>
+    <tbody id="table-d-body">
+    </tbody>
+  </table>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{ url_for('static', filename='index.js') }}"></script>
+{% endblock %}
