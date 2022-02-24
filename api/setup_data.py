@@ -57,7 +57,7 @@ if __name__ == '__main__':
     tables_names = save_execute(
         conn,
         'SELECT name FROM sqlite_master WHERE type="table" AND name NOT LIKE "sqlite_%"',
-        changes=False
+        cursor=True
         ).fetchall()
     tables_names = (table[0] for table in tables_names)
     # Drop all tables
